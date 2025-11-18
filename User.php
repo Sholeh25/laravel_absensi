@@ -2,68 +2,52 @@
 
 namespace App;
 
-use App\Notifications\ResetPassword;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\CanResetPassword;
+use App\Notifications\ResetPassword;
 
-class User extends Authenticatable
+class User extends Authenticatable implements CanResetPassword
 {
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'email',
+        'password',
+        'role',
     ];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
-    public function roles() {
-        return $this->belongsToMany('App\Role');
+    /** 
+     * Cek role (admin / employee)
+     */
+    public function hasRole($role)
+    {
+        return $this->role === $role;
     }
 
-    public function hasAnyRoles($roles) {
-        if($this->roles()->whereIn('name', $roles)->first()) {
-            return true;
-        }
-        return false;
-    }
-    
-    public function hasRole($role) {
-        if($this->roles()->where('name', $role)->first()) {
-            return true;
-        }
-        return false;
-    }
-
-    public function employee() {
+    /**
+     * Relasi One To One ke tabel Employee (opsional)
+     */
+    public function employee()
+    {
         return $this->hasOne('App\Employee');
     }
 
+    /**
+     * Reset password
+     */
     public function sendPasswordResetNotification($token)
     {
-        // Your your own implementation.
         $this->notify(new ResetPassword($token));
     }
 }

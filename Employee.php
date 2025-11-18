@@ -6,26 +6,69 @@ use Illuminate\Database\Eloquent\Model;
 
 class Employee extends Model
 {
-    protected $dates = ['created_at', 'dob','updated_at', 'join_date'];
-    protected $fillable = ['user_id', 'first_name', 'last_name', 'sex', 'dob', 'join_date', 'desg', 'department_id', 'salary', 'photo'];
-    public function user() {
-        return $this->belongsTo('App\User');
+    /**
+     * Kolom yang otomatis diparsing sebagai tanggal.
+     */
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'dob',
+        'join_date',
+    ];
+
+    /**
+     * Kolom yang dapat diisi mass-assignment.
+     */
+    protected $fillable = [
+        'user_id',
+        'first_name',
+        'last_name',
+        'sex',
+        'dob',
+        'join_date',
+        'desg',
+        'department_id',
+        'salary',
+        'photo',
+    ];
+
+    /**
+     * Relasi ke User (setiap employee punya satu user).
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
-    public function department() {
-        // return $this->hasOne('App\Department');
-        return $this->belongsTo('App\Department');
+    /**
+     * Relasi ke Department.
+     */
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 
-    public function attendance() {
-        return $this->hasMany('App\Attendance');
+    /**
+     * Relasi ke Attendance.
+     */
+    public function attendance()
+    {
+        return $this->hasMany(Attendance::class);
     }
 
-    public function leave() {
-        return $this->hasMany('App\Leave');
+    /**
+     * Relasi ke Leave.
+     */
+    public function leave()
+    {
+        return $this->hasMany(Leave::class);
     }
 
-    public function expense() {
-        return $this->hasMany('App\Expense');
+    /**
+     * Relasi ke Expense.
+     */
+    public function expense()
+    {
+        return $this->hasMany(Expense::class);
     }
 }
